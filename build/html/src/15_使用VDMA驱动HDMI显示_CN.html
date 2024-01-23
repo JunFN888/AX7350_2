@@ -1,0 +1,362 @@
+
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>使用VDMA驱动HDMI显示 &#8212; ZYNQ 7000开发平台FPGA教程 1.0 文档</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/groundwork.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/translations.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜索" href="../search.html" />
+    <link rel="next" title="固化程序" href="16_%E5%9B%BA%E5%8C%96%E7%A8%8B%E5%BA%8F_CN.html" />
+    <link rel="prev" title="自定义IP实验" href="14_%E8%87%AA%E5%AE%9A%E4%B9%89IP%E5%AE%9E%E9%AA%8C_CN.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="总索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="16_%E5%9B%BA%E5%8C%96%E7%A8%8B%E5%BA%8F_CN.html" title="固化程序"
+             accesskey="N">下一页</a> |</li>
+        <li class="right" >
+          <a href="14_%E8%87%AA%E5%AE%9A%E4%B9%89IP%E5%AE%9E%E9%AA%8C_CN.html" title="自定义IP实验"
+             accesskey="P">上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">ZYNQ 7000开发平台FPGA教程 1.0 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">使用VDMA驱动HDMI显示</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="vdmahdmi">
+<h1>使用VDMA驱动HDMI显示<a class="headerlink" href="#vdmahdmi" title="此标题的永久链接">¶</a></h1>
+<p><strong>实验VIvado工程为“vdma_hdmi_out”。</strong></p>
+<p>PS没有集成显示控制系统，需要借助PL来实现，实现的方案有很多，但是都离不开DMA系统，DMA系统可以完成显示数据从ddr3读出到显示器的显示，降低CPU的开销，VDMA是xilinx开发的特殊DMA，专门用于视频输入输出，是学习xilinx
+FPGA视频处理的重要内容。</p>
+<p>前面的HDMI显示数据是PL内部产生的，这个实验中显示数据是PS生成的，然后PL通过VDMA送给HDMI接口。</p>
+<section id="vivado">
+<h2>Vivado工程建立<a class="headerlink" href="#vivado" title="此标题的永久链接">¶</a></h2>
+<p>由于VDMA显示是一个非常重要的内容，本实验会详细介绍Vivado的搭建过程。</p>
+<ol class="arabic simple">
+<li><p>新建一个名为“vdma_hdmi_out”工程。</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image160.png"><img alt="../_images/image160.png" src="../_images/image160.png" style="width: 6.00417in; height: 5.06613in;" /></a>
+<ol class="arabic simple" start="2">
+<li><p>创建一个Block设计</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image230.png"><img alt="../_images/image230.png" src="../_images/image230.png" style="width: 6.00417in; height: 3.98419in;" /></a>
+<ol class="arabic simple" start="3">
+<li><p>设计名称保持默认不变</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image326.png"><img alt="../_images/image326.png" src="../_images/image326.png" style="width: 6.00417in; height: 3.20724in;" /></a>
+<ol class="arabic simple" start="4">
+<li><p>添加ZYNQ处理器</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image417.png"><img alt="../_images/image417.png" src="../_images/image417.png" style="width: 5.37497in; height: 3.93521in;" /></a>
+<ol class="arabic simple" start="5">
+<li><p>配置ZYNQ参数，使能HP0接口，用于VDMA快速读取ddr。</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image515.png"><img alt="../_images/image515.png" src="../_images/image515.png" style="width: 6.00417in; height: 4.60621in;" /></a>
+<ol class="arabic simple" start="6">
+<li><p>配置Bnak电平标准，Bank0为LVCMOS 3.3V，Bank1 为 LVCMOS 1.8V，使能串口</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image613.png"><img alt="../_images/image613.png" src="../_images/image613.png" style="width: 6.00417in; height: 4.60621in;" /></a>
+<ol class="arabic simple" start="7">
+<li><p>使能I2C0，并且选择EMIO，这样可以把I2C连接到PL端。</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image713.png"><img alt="../_images/image713.png" src="../_images/image713.png" style="width: 5.71804in; height: 4.3867in;" /></a>
+<ol class="arabic simple" start="8">
+<li><p>配置时钟，FCLK_CLK0配置为100Mhz，FCLK_CLK1配置为142Mhz，这个时钟用于VDMA读取数据。</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image813.png"><img alt="../_images/image813.png" src="../_images/image813.png" style="width: 6.00417in; height: 4.60621in;" /></a>
+<ol class="arabic simple" start="9">
+<li><p>配置ddr3，选择MT41256M16 RE-125</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image913.png"><img alt="../_images/image913.png" src="../_images/image913.png" style="width: 6.00417in; height: 4.60621in;" /></a>
+<ol class="arabic simple" start="10">
+<li><p>配置中断，使能IRQ_F2P，接收PL端的中断</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image1013.png"><img alt="../_images/image1013.png" src="../_images/image1013.png" style="width: 6.00417in; height: 4.60621in;" /></a>
+<ol class="arabic simple" start="11">
+<li><p>添加VDMA IP</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image1118.png"><img alt="../_images/image1118.png" src="../_images/image1118.png" style="width: 6.00417in; height: 3.91783in;" /></a>
+<ol class="arabic simple" start="12">
+<li><p>按照下图配置VDMA基本参数</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image1214.png"><img alt="../_images/image1214.png" src="../_images/image1214.png" style="width: 6.00417in; height: 4.40724in;" /></a>
+<ol class="arabic simple" start="13">
+<li><p>配置VDMA高级参数</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image1312.png"><img alt="../_images/image1312.png" src="../_images/image1312.png" style="width: 6.00417in; height: 4.40724in;" /></a>
+<ol class="arabic simple" start="14">
+<li><p>添加视频时序控制器</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image1411.png"><img alt="../_images/image1411.png" src="../_images/image1411.png" style="width: 6.00417in; height: 3.89062in;" /></a>
+<ol class="arabic simple" start="15">
+<li><p>配置视频时序控制器参数</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image1510.png"><img alt="../_images/image1510.png" src="../_images/image1510.png" style="width: 5.80616in; height: 4.46696in;" /></a>
+<ol class="arabic simple" start="16">
+<li><p>添加AXI流转视频输出控制器</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image169.png"><img alt="../_images/image169.png" src="../_images/image169.png" style="width: 6.00417in; height: 3.69002in;" /></a>
+<ol class="arabic simple" start="17">
+<li><p>配置AXI流转视频输出控制器参数</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image179.png"><img alt="../_images/image179.png" src="../_images/image179.png" style="width: 5.67085in; height: 4.3505in;" /></a>
+<ol class="arabic simple" start="18">
+<li><p>由于视频有很多分辨率，各种分辨的时钟频率不相同，需要使用一个动态时钟控制器，这个IP来自开源软件，找到例程里的repo目录，复制到自己的目录下</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image189.png"><img alt="../_images/image189.png" src="../_images/image189.png" style="width: 6.00417in; height: 2.35022in;" /></a>
+<ol class="arabic simple" start="19">
+<li><p>添加IP仓库</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image198.png"><img alt="../_images/image198.png" src="../_images/image198.png" style="width: 6.00417in; height: 2.43366in;" /></a>
+<ol class="arabic simple" start="20">
+<li><p>添加完成以后可以看到很多IP</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image207.png"><img alt="../_images/image207.png" src="../_images/image207.png" style="width: 5.27815in; height: 3.65456in;" /></a>
+<ol class="arabic simple" start="21">
+<li><p>添加动态时钟控制器</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image2112.png"><img alt="../_images/image2112.png" src="../_images/image2112.png" style="width: 6.00417in; height: 3.00772in;" /></a>
+<ol class="arabic simple" start="22">
+<li><p>连接Vivado可能无法自动连接的时钟信号</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image2210.png"><img alt="../_images/image2210.png" src="../_images/image2210.png" style="width: 6.00417in; height: 4.63579in;" /></a>
+<ol class="arabic simple" start="23">
+<li><p>连接其他一些关键信号</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image237.png"><img alt="../_images/image237.png" src="../_images/image237.png" style="width: 6.00417in; height: 2.58844in;" /></a>
+<a class="reference internal image-reference" href="../_images/image237.png"><img alt="../_images/image237.png" src="../_images/image237.png" style="width: 6.00417in; height: 2.58844in;" /></a>
+<ol class="arabic simple" start="24">
+<li><p>连接中断信号，需要先添加一个Concat IP，用于信号连接</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image246.png"><img alt="../_images/image246.png" src="../_images/image246.png" style="width: 4.3984in; height: 3.56487in;" /></a>
+<a class="reference internal image-reference" href="../_images/image255.png"><img alt="../_images/image255.png" src="../_images/image255.png" style="width: 6.00417in; height: 3.71772in;" /></a>
+<ol class="arabic simple" start="25">
+<li><p>使用Vivado自动连接功能，完成剩下的线连接</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image265.png"><img alt="../_images/image265.png" src="../_images/image265.png" style="width: 6.00417in; height: 4.41249in;" /></a>
+<ol class="arabic simple" start="26">
+<li><p>选择所有模块自动连接</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image275.png"><img alt="../_images/image275.png" src="../_images/image275.png" style="width: 6.00417in; height: 3.75643in;" /></a>
+<ol class="arabic simple" start="27">
+<li><p>运行“Run Block Automation”完成一些必要的端口导出</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image285.png"><img alt="../_images/image285.png" src="../_images/image285.png" style="width: 6.00417in; height: 3.65747in;" /></a>
+<ol class="arabic simple" start="28">
+<li><p>展开vid_io_out端口</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image295.png"><img alt="../_images/image295.png" src="../_images/image295.png" style="width: 3.50604in; height: 2.66922in;" /></a>
+<ol class="arabic simple" start="29">
+<li><p>选择我们需要的端口导出</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image305.png"><img alt="../_images/image305.png" src="../_images/image305.png" style="width: 4.72278in; height: 3.39002in;" /></a>
+<ol class="arabic simple" start="30">
+<li><p>导出IIC_0端口</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image3112.png"><img alt="../_images/image3112.png" src="../_images/image3112.png" style="width: 5.36301in; height: 3.89864in;" /></a>
+<ol class="arabic simple" start="31">
+<li><p>导出视频时钟端口</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image327.png"><img alt="../_images/image327.png" src="../_images/image327.png" style="width: 4.59031in; height: 3.24711in;" /></a>
+<ol class="arabic simple" start="32">
+<li><p>名称修改为hdmi_out_clk</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image336.png"><img alt="../_images/image336.png" src="../_images/image336.png" style="width: 5.00952in; height: 4.46904in;" /></a>
+<ol class="arabic simple" start="33">
+<li><p>修改其他端口的名称</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image345.png"><img alt="../_images/image345.png" src="../_images/image345.png" style="width: 5.434in; height: 4.55249in;" /></a>
+<ol class="arabic simple" start="34">
+<li><p>保存设计后按F6 检查设计，没有问题后创建HDL文件</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image355.png"><img alt="../_images/image355.png" src="../_images/image355.png" style="width: 5.32187in; height: 3.68061in;" /></a>
+<ol class="arabic simple" start="35">
+<li><p>添加HDMI输出的xdc文件，约束管脚</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image364.png"><img alt="../_images/image364.png" src="../_images/image364.png" style="width: 6.00417in; height: 3.94619in;" /></a>
+<ol class="arabic simple" start="36">
+<li><p>xdc文件内容如下</p></li>
+</ol>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p>set_property BITSTREAM.GENERAL.COMPRESS TRUE [current_design]</p>
+<p>set_property CONFIG_VOLTAGE 3.3 [current_design]</p>
+<p>set_property CFGBVS VCCO [current_design]</p>
+<p>set_property BITSTREAM.CONFIG.UNUSEDPIN PULLUP [current_design]</p>
+<p>set_property PACKAGE_PIN K13 [get_ports hdmi_out_clk]</p>
+<p>set_property PACKAGE_PIN G16 [get_ports {hdmi_out_data[0]}]</p>
+<p>set_property PACKAGE_PIN E16 [get_ports {hdmi_out_data[1]}]</p>
+<p>set_property PACKAGE_PIN J15 [get_ports {hdmi_out_data[2]}]</p>
+<p>set_property PACKAGE_PIN E15 [get_ports {hdmi_out_data[3]}]</p>
+<p>set_property PACKAGE_PIN F15 [get_ports {hdmi_out_data[4]}]</p>
+<p>set_property PACKAGE_PIN G15 [get_ports {hdmi_out_data[5]}]</p>
+<p>set_property PACKAGE_PIN F14 [get_ports {hdmi_out_data[6]}]</p>
+<p>set_property PACKAGE_PIN H14 [get_ports {hdmi_out_data[7]}]</p>
+<p>set_property PACKAGE_PIN J13 [get_ports {hdmi_out_data[8]}]</p>
+<p>set_property PACKAGE_PIN K12 [get_ports {hdmi_out_data[9]}]</p>
+<p>set_property PACKAGE_PIN B11 [get_ports {hdmi_out_data[10]}]</p>
+<p>set_property PACKAGE_PIN C12 [get_ports {hdmi_out_data[11]}]</p>
+<p>set_property PACKAGE_PIN D13 [get_ports {hdmi_out_data[12]}]</p>
+<p>set_property PACKAGE_PIN A12 [get_ports {hdmi_out_data[13]}]</p>
+<p>set_property PACKAGE_PIN C13 [get_ports {hdmi_out_data[14]}]</p>
+<p>set_property PACKAGE_PIN A13 [get_ports {hdmi_out_data[15]}]</p>
+<p>set_property PACKAGE_PIN D14 [get_ports {hdmi_out_data[16]}]</p>
+<p>set_property PACKAGE_PIN D15 [get_ports {hdmi_out_data[17]}]</p>
+<p>set_property PACKAGE_PIN A14 [get_ports {hdmi_out_data[18]}]</p>
+<p>set_property PACKAGE_PIN B14 [get_ports {hdmi_out_data[19]}]</p>
+<p>set_property PACKAGE_PIN A15 [get_ports {hdmi_out_data[20]}]</p>
+<p>set_property PACKAGE_PIN B15 [get_ports {hdmi_out_data[21]}]</p>
+<p>set_property PACKAGE_PIN D16 [get_ports {hdmi_out_data[22]}]</p>
+<p>set_property PACKAGE_PIN B16 [get_ports {hdmi_out_data[23]}]</p>
+<p>set_property PACKAGE_PIN K15 [get_ports hdmi_out_de]</p>
+<p>set_property PACKAGE_PIN C11 [get_ports hdmi_out_hs]</p>
+<p>set_property PACKAGE_PIN B12 [get_ports hdmi_out_vs]</p>
+<p>set_property PACKAGE_PIN A17 [get_ports hdmi_i2c_scl_io]</p>
+<p>set_property PACKAGE_PIN C16 [get_ports hdmi_i2c_sda_io]</p>
+<p>set_property IOSTANDARD LVCMOS18 [get_ports hdmi_i2c_scl_io]</p>
+<p>set_property IOSTANDARD LVCMOS18 [get_ports hdmi_i2c_sda_io]</p>
+<p>set_property IOSTANDARD LVCMOS18 [get_ports hdmi_out_clk]</p>
+<p>set_property IOSTANDARD LVCMOS18 [get_ports hdmi_out_de]</p>
+<p>set_property IOSTANDARD LVCMOS18 [get_ports hdmi_out_hs]</p>
+<p>set_property IOSTANDARD LVCMOS18 [get_ports {hdmi_out_data[*]}]</p>
+<p>set_property IOSTANDARD LVCMOS18 [get_ports hdmi_out_vs]</p>
+<p>set_property SLEW FAST [get_ports {hdmi_out_data[*]}]</p>
+<p>set_property DRIVE 8 [get_ports {hdmi_out_data[*]}]</p>
+<p>set_property SLEW FAST [get_ports hdmi_out_clk]</p>
+<p>set_property SLEW FAST [get_ports hdmi_out_de]</p>
+<p>set_property SLEW FAST [get_ports hdmi_out_hs]</p>
+<p>set_property SLEW FAST [get_ports hdmi_out_vs]</p>
+</td>
+</tr>
+</tbody>
+</table>
+<ol class="arabic simple">
+<li><p>编译生成bit文件</p></li>
+</ol>
+</section>
+<section id="vitis">
+<h2>Vitis软件编写调试<a class="headerlink" href="#vitis" title="此标题的永久链接">¶</a></h2>
+<ol class="arabic simple">
+<li><p>导出硬件</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image374.png"><img alt="../_images/image374.png" src="../_images/image374.png" style="width: 2.33194in; height: 2.83611in;" /></a>
+<a class="reference internal image-reference" href="../_images/image384.png"><img alt="../_images/image384.png" src="../_images/image384.png" style="width: 3.75625in; height: 3.18333in;" /></a>
+<ol class="arabic simple" start="2">
+<li><p>运行Vitis，新建一个名为vdma_hdmi的APP，已经预备了相关程序</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image394.png"><img alt="../_images/image394.png" src="../_images/image394.png" style="width: 2.41025in; height: 2.62993in;" /></a>
+<ol class="arabic simple" start="3">
+<li><p>由于程序文件较多，不再具体介绍，直接复制例程的源代码。删除src目录下的文件，使用例程的src目录文件代替</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image402.png"><img alt="../_images/image402.png" src="../_images/image402.png" style="width: 5.19861in; height: 2.12222in;" /></a>
+<ol class="arabic simple" start="4">
+<li><p>在Vitis下按F5刷新</p></li>
+<li><p>在display_ctrl文件夹中，diplay_ctrl.c主要是显示的控制，vga_mode.h中加入了一些显示分辨率的时序参数。</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image418.png"><img alt="../_images/image418.png" src="../_images/image418.png" style="width: 5.11389in; height: 2.52569in;" /></a>
+<p>在display_ctrl.c中，可以修改displayPtr-&gt;vMode，改变显示的分辨率。</p>
+<a class="reference internal image-reference" href="../_images/image423.png"><img alt="../_images/image423.png" src="../_images/image423.png" style="width: 6.00417in; height: 2.96042in;" /></a>
+<ol class="arabic simple" start="6">
+<li><p>Dynclk文件中，主要功能是根据不同的分辨率配置锁相环的时钟输出，产生像素时钟。</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image432.png"><img alt="../_images/image432.png" src="../_images/image432.png" style="width: 2.83179in; height: 2.92993in;" /></a>
+<ol class="arabic simple" start="7">
+<li><p>连接HDMI输出端口到显示器，编译运行</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image442.png"><img alt="../_images/image442.png" src="../_images/image442.png" style="width: 4.63819in; height: 3.16389in;" /></a>
+<ol class="arabic simple" start="8">
+<li><p>显示器显示出一幅图片</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image45.jpeg"><img alt="../_images/image45.jpeg" src="../_images/image45.jpeg" style="width: 3.89097in; height: 2.52292in;" /></a>
+<p><em>ZYNQ-7000开发平台 FPGA教程</em>    - <a class="reference external" href="http://www.alinx.com">Alinx官方网站</a></p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">目录</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">使用VDMA驱动HDMI显示</a><ul>
+<li><a class="reference internal" href="#vivado">Vivado工程建立</a></li>
+<li><a class="reference internal" href="#vitis">Vitis软件编写调试</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>上一主题</h4>
+    <p class="topless"><a href="14_%E8%87%AA%E5%AE%9A%E4%B9%89IP%E5%AE%9E%E9%AA%8C_CN.html"
+                          title="上一章">自定义IP实验</a></p>
+  </div>
+  <div>
+    <h4>下一主题</h4>
+    <p class="topless"><a href="16_%E5%9B%BA%E5%8C%96%E7%A8%8B%E5%BA%8F_CN.html"
+                          title="下一章">固化程序</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>本页</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/src/15_使用VDMA驱动HDMI显示_CN.rst.txt"
+            rel="nofollow">显示源代码</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">快速搜索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="提交" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="总索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="16_%E5%9B%BA%E5%8C%96%E7%A8%8B%E5%BA%8F_CN.html" title="固化程序"
+             >下一页</a> |</li>
+        <li class="right" >
+          <a href="14_%E8%87%AA%E5%AE%9A%E4%B9%89IP%E5%AE%9E%E9%AA%8C_CN.html" title="自定义IP实验"
+             >上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">ZYNQ 7000开发平台FPGA教程 1.0 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">使用VDMA驱动HDMI显示</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; 版权所有 2024, ALINX.
+      由 <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.2.1创建。
+    </div>
+  </body>
+</html>

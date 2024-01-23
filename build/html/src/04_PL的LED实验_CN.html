@@ -1,0 +1,367 @@
+
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>PL的“Hello World”LED实验 &#8212; ZYNQ 7000开发平台FPGA教程 1.0 文档</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/groundwork.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/translations.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜索" href="../search.html" />
+    <link rel="next" title="HDMI输出实验" href="05_HDMI%E8%BE%93%E5%87%BA%E5%AE%9E%E9%AA%8C_CN.html" />
+    <link rel="prev" title="Vivado开发环境" href="03_Vivado%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83_CN.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="总索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="05_HDMI%E8%BE%93%E5%87%BA%E5%AE%9E%E9%AA%8C_CN.html" title="HDMI输出实验"
+             accesskey="N">下一页</a> |</li>
+        <li class="right" >
+          <a href="03_Vivado%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83_CN.html" title="Vivado开发环境"
+             accesskey="P">上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">ZYNQ 7000开发平台FPGA教程 1.0 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">PL的“Hello World”LED实验</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="plhello-worldled">
+<h1>PL的“Hello World”LED实验<a class="headerlink" href="#plhello-worldled" title="此标题的永久链接">¶</a></h1>
+<p><strong>实验VIvado工程为“led”。</strong></p>
+<p>对于ZYNQ来说PL（FPGA）开发是至关重要的，这也是ZYNQ比其他ARM的有优势的地方，可以定制化很多ARM端的外设，在定制ARM端的外设之前先让我们通过一个LED例程来熟悉PL（FPGA）的开发流程，熟悉Vivado软件的基本操作，这个开发流程和不带ARM的FPGA芯片完全一致。</p>
+<p>在本例程中，我们要做的是LED灯控制实验，每秒钟控制开发板上的LED灯翻转一次，实现亮、灭、亮、灭的控制。会控制LED灯，其它外设也慢慢就会了。</p>
+<section id="led">
+<h2>LED硬件介绍<a class="headerlink" href="#led" title="此标题的永久链接">¶</a></h2>
+<a class="reference internal image-reference" href="../_images/image114.png"><img alt="../_images/image114.png" src="../_images/image114.png" style="width: 6.00417in; height: 1.14859in;" /></a>
+<p>PL端只能直接控制PL端的LED，PS端的外设是无法直接控制的，我们可以看到4颗LED通过三极管连接到3.3V电源，当三极管导通LED就会亮，只要连接到三极管的IO为高电平，三极管就会导通。无论是学习FPGA还是学习ARM，基本的硬件知识还是要掌握，例如看原理图。</p>
+<p>从原理图我们可以知道四个LED对应的ZYNQ芯片的管脚情况如下：</p>
+<p>PL_LED1 —— F5</p>
+<p>PL_LED2 —— E5</p>
+<p>PL_LED3 —— G5</p>
+<p>PL_LED4 —— G6</p>
+</section>
+<section id="vivado">
+<h2>创建Vivado工程<a class="headerlink" href="#vivado" title="此标题的永久链接">¶</a></h2>
+<ol class="arabic simple">
+<li><p>启动Vivado，在Windows中可以通过双击Vivado快捷方式启动</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image23.png"><img alt="C:/Users/Administrator/Desktop/vivado_2023.1/AX7010_2023.1/7010_S1文档/images/images_5/image133.pngimage133" src="../_images/image23.png" style="width: 0.7916in; height: 0.85in;" /></a>
+<ol class="arabic simple" start="2">
+<li><p>在Vivado开发环境里点击“Create New Project”，创建一个新的工程。</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image33.png"><img alt="C:/Users/Administrator/Desktop/vivado_2023.1/AX7010_2023.1/7010_S1文档/images/images_5/image134.pngimage134" src="../_images/image33.png" style="width: 5.15486in; height: 3.53542in;" /></a>
+<ol class="arabic simple" start="3">
+<li><p>弹出一个建立新工程的向导，点击“Next”</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image43.png"><img alt="C:/Users/Administrator/Desktop/vivado_2023.1/AX7010_2023.1/7010_S1文档/images/images_5/image135.pngimage135" src="../_images/image43.png" style="width: 5.57778in; height: 4.07917in;" /></a>
+<ol class="arabic simple">
+<li><p>在弹出的对话框中输入工程名和工程存放的目录，我们这里取一个led的工程名。需要注意工程路径“Project
+location”不能有中文空格，路径名称也不能太长。</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image53.png"><img alt="../_images/image53.png" src="../_images/image53.png" style="width: 4.98031in; height: 4.20278in;" /></a>
+<ol class="arabic simple" start="2">
+<li><p>在工程类型中选择“RTL Project”</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image63.png"><img alt="../_images/image63.png" src="../_images/image63.png" style="width: 4.93804in; height: 4.1671in;" /></a>
+<ol class="arabic simple" start="3">
+<li><p>目标语言“Target language”选择“Verilog”</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image73.png"><img alt="../_images/image73.png" src="../_images/image73.png" style="width: 4.96728in; height: 4.19177in;" /></a>
+<ol class="arabic simple" start="4">
+<li><p>点击“Next”，不添加任何文件</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image83.png"><img alt="../_images/image83.png" src="../_images/image83.png" style="width: 4.8175in; height: 4.06538in;" /></a>
+<ol class="arabic simple" start="5">
+<li><p>在“Default
+Part”选项中，器件家族“Family”选择“Zynq-7000”，封装类型“Package”选择“ffg676”,减少我们选择范围。在下拉列表中选择“xc7z035ffg672-2”,“-2”表示速率等级，数字越大，性能越好。</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image93.png"><img alt="../_images/image93.png" src="../_images/image93.png" style="width: 4.85742in; height: 4.09907in;" /></a>
+<ol class="arabic simple" start="6">
+<li><p>点击“Finish”就可以完成以后名为“led”工程的创建。</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image103.png"><img alt="../_images/image103.png" src="../_images/image103.png" style="width: 4.94887in; height: 4.17624in;" /></a>
+<ol class="arabic simple" start="7">
+<li><p>Vivado软件界面</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image115.png"><img alt="../_images/image115.png" src="../_images/image115.png" style="width: 4.61346in; height: 3.97672in;" /></a>
+</section>
+<section id="verilogled">
+<h2>创建Verilog文件点亮LED<a class="headerlink" href="#verilogled" title="此标题的永久链接">¶</a></h2>
+<ol class="arabic simple">
+<li><p>点击Project Manager下的Add Sources图标（或者使用快捷键Alt+A）</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image122.png"><img alt="../_images/image122.png" src="../_images/image122.png" style="width: 3.88736in; height: 2.26719in;" /></a>
+<ol class="arabic simple" start="2">
+<li><p>选择添加或创建设计源文件“Add or create design sources”,点击“Next”</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image132.png"><img alt="../_images/image132.png" src="../_images/image132.png" style="width: 5.11453in; height: 3.45338in;" /></a>
+<ol class="arabic simple" start="3">
+<li><p>选择创建文件“Create File”</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image142.png"><img alt="../_images/image142.png" src="../_images/image142.png" style="width: 5.19748in; height: 3.5094in;" /></a>
+<ol class="arabic simple" start="4">
+<li><p>文件名“File name”设置为“led”，点击“OK”</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image152.png"><img alt="../_images/image152.png" src="../_images/image152.png" style="width: 4.86244in; height: 3.28317in;" /></a>
+<ol class="arabic simple" start="5">
+<li><p>点击“Finish”,完成“led.v”文件添加</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image161.png"><img alt="../_images/image161.png" src="../_images/image161.png" style="width: 4.89769in; height: 3.30698in;" /></a>
+<ol class="arabic simple" start="6">
+<li><p>在弹出的模块定义“Define
+Module”,中可以指定“led.v”文件的模块名称“Module
+name”,这里默认不变为“led”，还可以指定一些端口，这里暂时不指定，点击“OK”。</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image171.png"><img alt="../_images/image171.png" src="../_images/image171.png" style="width: 4.48908in; height: 3.21372in;" /></a>
+<ol class="arabic simple" start="7">
+<li><p>在弹出的对话框中选择“Yes”</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image181.png"><img alt="../_images/image181.png" src="../_images/image181.png" style="width: 4.33533in; height: 3.10366in;" /></a>
+<ol class="arabic simple" start="8">
+<li><p>双击“led.v”可以打开文件，然后编辑</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image191.png"><img alt="../_images/image191.png" src="../_images/image191.png" style="width: 4.59715in; height: 3.00708in;" /></a>
+<ol class="arabic simple" start="9">
+<li><p>编写“led.v”,这里定义了一个32位的寄存器timer,
+用于循环计数0~49999999(1秒钟), 计数到49999999(1秒)的时候,
+寄存器timer变为0，并翻转四个LED。这样原来LED是灭的话，就会点亮，如果原来LED为亮的话，就会熄灭。编写好后的代码如下：</p></li>
+</ol>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p>`timescale 1ns <strong>/</strong> 1ps</p>
+<p>module led(</p>
+<p><strong>input</strong> sys_clk<strong>,</strong></p>
+<p><strong>output</strong> <strong>reg</strong> <strong>[</strong>3<strong>:</strong>0<strong>]</strong> led</p>
+<p><strong>);</strong></p>
+<p><strong>reg[</strong>31<strong>:</strong>0<strong>]</strong> timer_cnt<strong>;</strong></p>
+<p>always&#64;(posedge sys_clk)</p>
+<p>begin</p>
+<p><strong>if(</strong>timer_cnt <strong>&gt;=</strong> 32’d49_999_999<strong>)</strong></p>
+<p>begin</p>
+<p>led <strong>&lt;=</strong> <strong>~</strong>led<strong>;</strong></p>
+<p>timer_cnt <strong>&lt;=</strong> 32’d0<strong>;</strong></p>
+<p><strong>end</strong></p>
+<p><strong>else</strong></p>
+<p>begin</p>
+<p>led <strong>&lt;=</strong> led<strong>;</strong></p>
+<p>timer_cnt <strong>&lt;=</strong> timer_cnt <strong>+</strong> 32’d1<strong>;</strong></p>
+<p><strong>end</strong></p>
+<p>end</p>
+<p>endmodule</p>
+</td>
+</tr>
+</tbody>
+</table>
+<ol class="arabic simple">
+<li><p>编写好代码后保存,点击菜单File -&gt; Save All Files</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image201.png"><img alt="../_images/image201.png" src="../_images/image201.png" style="width: 5.27195in; height: 2.98142in;" /></a>
+</section>
+<section id="xdc">
+<h2>添加XDC约束文件约束管脚<a class="headerlink" href="#xdc" title="此标题的永久链接">¶</a></h2>
+<p>Vivado使用的约束文件格式为xdc文件,xdc文件里主要是完成管脚的约束,时钟的约束,
+以及组的约束。这里我们需要对led.v程序中的输入输出端口分配到FPGA的真实管脚上,
+这需要准备一个FPGA的引脚绑定文件.xdc并添加到工程中。</p>
+<ol class="arabic simple">
+<li><p>点击Project Manager下的Add Sources</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image211.png"><img alt="../_images/image211.png" src="../_images/image211.png" style="width: 4.01913in; height: 3.48702in;" /></a>
+<ol class="arabic simple" start="2">
+<li><p>选择“Add or create constraints”选项，点击“Next”</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image221.png"><img alt="../_images/image221.png" src="../_images/image221.png" style="width: 4.71745in; height: 3.62874in;" /></a>
+<ol class="arabic simple" start="3">
+<li><p>点击“Create File”按钮</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image231.png"><img alt="../_images/image231.png" src="../_images/image231.png" style="width: 4.69668in; height: 3.61276in;" /></a>
+<ol class="arabic simple" start="4">
+<li><p>在弹出的对话框里选择File type是XDC,“File name”为“led”, 点击OK按钮</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image24.png"><img alt="../_images/image24.png" src="../_images/image24.png" style="width: 4.73617in; height: 3.64314in;" /></a>
+<ol class="arabic simple" start="5">
+<li><p>点击“Finish”完成</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image25.png"><img alt="../_images/image25.png" src="../_images/image25.png" style="width: 4.80169in; height: 3.69353in;" /></a>
+<ol class="arabic simple" start="6">
+<li><p>这时在Project
+Manager界面下的Constraints目录的constrs_1目录下已经有了一个“led.xdc”文件</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image26.png"><img alt="../_images/image26.png" src="../_images/image26.png" style="width: 3.83866in; height: 3.2108in;" /></a>
+<ol class="arabic simple" start="7">
+<li><p>双击打开这个led.xdc文件，在这个文件里添加以下的引脚定义</p></li>
+</ol>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p>set_property IOSTANDARD LVCMOS15 [get_ports {led[3]}]</p>
+<p>set_property IOSTANDARD LVCMOS15 [get_ports {led[2]}]</p>
+<p>set_property IOSTANDARD LVCMOS15 [get_ports {led[1]}]</p>
+<p>set_property IOSTANDARD LVCMOS15 [get_ports {led[0]}]</p>
+<p>set_property IOSTANDARD LVCMOS18 [get_ports sys_clk]</p>
+<p>set_property PACKAGE_PIN J14 [get_ports sys_clk]</p>
+<p>set_property PACKAGE_PIN F5 [get_ports {led[0]}]</p>
+<p>set_property PACKAGE_PIN E5 [get_ports {led[1]}]</p>
+<p>set_property PACKAGE_PIN G5 [get_ports {led[2]}]</p>
+<p>set_property PACKAGE_PIN G6 [get_ports {led[3]}]</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>下面来介绍一下最基本的XDC编写的语法，普通IO口只需约束引脚号和电压，管脚约束如下：</p>
+<p><strong>set_property PACKAGE_PIN “引脚编号” [get_ports “端口名称”]</strong></p>
+<p>电平信号的约束如下：</p>
+<p><strong>set_property IOSTANDARD “电平标准” [get_ports “端口名称”]</strong></p>
+<p>这里需要注意文字的大小写，端口名称是数组的话用{
+}刮起来，端口名称必须和源代码中的名字一致，且端口名字不能和关键字一样。</p>
+<p>电平标准中LVCMOS15后面的数字指FPGA的BANK电压，LED所在BANK电压为1.5伏，所以电平标准为“LVCMOS15”，时钟输入FPGA的BANK电压为1.8V，所以电平标准为“LVCMOS18”。</p>
+<a class="reference internal image-reference" href="../_images/image27.png"><img alt="../_images/image27.png" src="../_images/image27.png" style="width: 6.00417in; height: 5.74936in;" /></a>
+<ol class="arabic simple">
+<li><p>完成后选择菜单File -&gt; Save all files保存所有文件</p></li>
+</ol>
+</section>
+<section id="id1">
+<h2>编译工程<a class="headerlink" href="#id1" title="此标题的永久链接">¶</a></h2>
+<ol class="arabic simple">
+<li><p>编译的过程可以细分为综合、布局布线、生成bit文件等，这里我们直接点击“Generate
+Bitstream”,直接生成bit文件。</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image28.png"><img alt="../_images/image28.png" src="../_images/image28.png" style="width: 3.28521in; height: 6.3275in;" /></a>
+<ol class="arabic simple" start="2">
+<li><p>在弹出的对话框中可以选择任务数量，这里和CPU核心数有关，一般数字越大，编译越快，点击“OK”</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image29.png"><img alt="../_images/image29.png" src="../_images/image29.png" style="width: 3.93906in; height: 3.08622in;" /></a>
+<ol class="arabic simple" start="3">
+<li><p>这个时候开始编译，可以看到右上角有个状态信息，在编译过程中可能会被杀毒软件、电脑管家拦截运行，导致无法编译或很长时间没有编译成功。</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image30.png"><img alt="../_images/image30.png" src="../_images/image30.png" style="width: 5.50782in; height: 0.40733in;" /></a>
+<ol class="arabic simple" start="4">
+<li><p>编译中没有任何错误，编译完成，弹出一个对话框让我们选择后续操作，这里选项“Open
+Hardware
+Manger”，点击“OK”，当然，也可以选择“Cancel”，然后在左边导航栏选择“Open
+Hardware Manger”</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image311.png"><img alt="../_images/image311.png" src="../_images/image311.png" style="width: 3.02588in; height: 2.86353in;" /></a>
+</section>
+<section id="id2">
+<h2>下载调试<a class="headerlink" href="#id2" title="此标题的永久链接">¶</a></h2>
+<ol class="arabic simple">
+<li><p>连接好开发板的JTAG接口到PC的USB，给开发板上电</p></li>
+</ol>
+<p>在“HARDWARE MANAGER”界面点击“Open target”</p>
+<a class="reference internal image-reference" href="../_images/image321.png"><img alt="../_images/image321.png" src="../_images/image321.png" style="width: 4.95218in; height: 4.99011in;" /></a>
+<ol class="arabic simple" start="2">
+<li><p>点击“Auto Connect”</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image331.png"><img alt="../_images/image331.png" src="../_images/image331.png" style="width: 3.5359in; height: 2.02379in;" /></a>
+<ol class="arabic simple" start="3">
+<li><p>可以看到JTAG扫描到arm和FPGA内核，还有一个XADC，可以检测系统电压、温度</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image34.png"><img alt="../_images/image34.png" src="../_images/image34.png" style="width: 6.00417in; height: 3.15325in;" /></a>
+<ol class="arabic simple" start="4">
+<li><p>选择xc7z035_1，右键“Program Device…”</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image35.png"><img alt="../_images/image35.png" src="../_images/image35.png" style="width: 4.28629in; height: 3.37812in;" /></a>
+<ol class="arabic simple" start="5">
+<li><p>在弹出窗口中点击“Program”</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image36.png"><img alt="../_images/image36.png" src="../_images/image36.png" style="width: 4.74378in; height: 2.63785in;" /></a>
+<ol class="arabic simple" start="6">
+<li><p>等待下载</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image37.png"><img alt="../_images/image37.png" src="../_images/image37.png" style="width: 5.22461in; height: 1.43215in;" /></a>
+<ol class="arabic simple" start="7">
+<li><p>下载完成以后，我们可以看到4颗LED开始每秒变化一次。到此为止Vivado简单流程体验完成。后面的章节会介绍如果把程序烧录到Flash，需要PS系统的配合才能完成，只有PL的工程不能直接烧写Flash。</p></li>
+</ol>
+<p><em>ZYNQ-7000开发平台 FPGA教程</em>    - <a class="reference external" href="http://www.alinx.com">Alinx官方网站</a></p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">目录</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">PL的“Hello World”LED实验</a><ul>
+<li><a class="reference internal" href="#led">LED硬件介绍</a></li>
+<li><a class="reference internal" href="#vivado">创建Vivado工程</a></li>
+<li><a class="reference internal" href="#verilogled">创建Verilog文件点亮LED</a></li>
+<li><a class="reference internal" href="#xdc">添加XDC约束文件约束管脚</a></li>
+<li><a class="reference internal" href="#id1">编译工程</a></li>
+<li><a class="reference internal" href="#id2">下载调试</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>上一主题</h4>
+    <p class="topless"><a href="03_Vivado%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83_CN.html"
+                          title="上一章">Vivado开发环境</a></p>
+  </div>
+  <div>
+    <h4>下一主题</h4>
+    <p class="topless"><a href="05_HDMI%E8%BE%93%E5%87%BA%E5%AE%9E%E9%AA%8C_CN.html"
+                          title="下一章">HDMI输出实验</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>本页</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/src/04_PL的LED实验_CN.rst.txt"
+            rel="nofollow">显示源代码</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">快速搜索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="提交" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="总索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="05_HDMI%E8%BE%93%E5%87%BA%E5%AE%9E%E9%AA%8C_CN.html" title="HDMI输出实验"
+             >下一页</a> |</li>
+        <li class="right" >
+          <a href="03_Vivado%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83_CN.html" title="Vivado开发环境"
+             >上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">ZYNQ 7000开发平台FPGA教程 1.0 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">PL的“Hello World”LED实验</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; 版权所有 2024, ALINX.
+      由 <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.2.1创建。
+    </div>
+  </body>
+</html>

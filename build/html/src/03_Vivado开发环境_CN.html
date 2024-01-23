@@ -1,0 +1,198 @@
+
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Vivado开发环境 &#8212; ZYNQ 7000开发平台FPGA教程 1.0 文档</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/groundwork.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/translations.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜索" href="../search.html" />
+    <link rel="next" title="PL的“Hello World”LED实验" href="04_PL%E7%9A%84LED%E5%AE%9E%E9%AA%8C_CN.html" />
+    <link rel="prev" title="ZYNQ简介" href="02_ZYNQ%E7%AE%80%E4%BB%8B_CN.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="总索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="04_PL%E7%9A%84LED%E5%AE%9E%E9%AA%8C_CN.html" title="PL的“Hello World”LED实验"
+             accesskey="N">下一页</a> |</li>
+        <li class="right" >
+          <a href="02_ZYNQ%E7%AE%80%E4%BB%8B_CN.html" title="ZYNQ简介"
+             accesskey="P">上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">ZYNQ 7000开发平台FPGA教程 1.0 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Vivado开发环境</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="vivado">
+<h1>Vivado开发环境<a class="headerlink" href="#vivado" title="此标题的永久链接">¶</a></h1>
+<section id="id1">
+<h2>Vivado软件介绍<a class="headerlink" href="#id1" title="此标题的永久链接">¶</a></h2>
+<p>一提起Xilinx的开发环境，人们总是先会想起ISE，而对Vivado不甚了解。其实，Vivado是Xilinx公司于2012推出的新一代集成设计
+环境。虽然目前其流行度并不高，但可以说Vivado代表了未来Xilinx
+FPGA开发环境的变化趋势。所以，作为一个Xilinx
+FPGA的开发使用者，学习掌握Vivado是趋势，也是必然。作为开发者，首先肯定有以下疑惑：既然已经有ISE存在了，为何Xilinx公司又花大力气去搞什么Vivado呢？在Vivado
+Design Suite User Guide : Getting
+Started(UG910)中提到，推出Vivado是为了提高设计者的效率，它能显著增加Xilinx的28nm工艺的可编程逻辑器件的设计、综合与
+实现效率。可以推测，随着FPGA进入28nm时代，ISE工具似乎就有些“不合时宜”了，硬件提升了，软件不提升的话，设计效率必然受影响。正是出于这
+一考虑，Xilinx公司于2008年开始便筹划推出新一代的软件开发环境，经历10年时间打造出了Vivado工具这一巅峰之作。</p>
+</section>
+<section id="id2">
+<h2>Vivado软件版本<a class="headerlink" href="#id2" title="此标题的永久链接">¶</a></h2>
+<p>Vivado的软件版本在不断的升级中，到目前为止最新的软件版本已经是2023.2了。因为ZYNQ开发板的所有例程和教程我们都在Vivado
+2023.1的开发环境中完成。为了避免软件版本版本的原因而导致一些无法解释的问题，还是希望大家学习过程中与我们保持同步。用户使用之前需要安装Vivado
+2023.1的软件。因为Vivado软件比较大，我们没有提供光盘安装文件，只提供下载链接，另外用户也可以到Xilinx的官网下载，官网下载需要注册相关账号。</p>
+<p>Vivado软件的Xilinx官方下载地址：<a class="reference external" href="http://china.xilinx.com/support/download.html">http://china.xilinx.com/support/download.html</a></p>
+<a class="reference internal image-reference" href="../_images/image112.png"><img alt="C:/Users/Administrator/Desktop/vivado_2023.1/AX7010_2023.1/7010_S1文档/images/images_2/image14.pngimage14" src="../_images/image112.png" style="width: 6.00417in; height: 3.66181in;" /></a>
+<p>Vivado提供了Linux版和Windows版，还提供二合一版本，我们这里使用二合一版本，既能满足Windows开发又能满足Linux开发，Vivado要求操作系统必须是64位。</p>
+</section>
+<section id="vivadowindows">
+<h2>Vivado软件Windows下安装<a class="headerlink" href="#vivadowindows" title="此标题的永久链接">¶</a></h2>
+<ol class="arabic simple">
+<li><p>下载解压Vivado软件压缩包，直接点击xsetup.exe，进入安装，不过为了更好的安装，请关闭杀毒软件，各种电脑管家，电脑用户名不要有中文，和空格</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image22.png"><img alt="C:/Users/Administrator/Desktop/vivado_2023.1/AX7010_2023.1/7010_S1文档/images/images_2/image145.pngimage145" src="../_images/image22.png" style="width: 2.74966in; height: 0.24931in;" /></a>
+<a class="reference internal image-reference" href="../_images/image32.png"><img alt="C:/Users/Administrator/Desktop/vivado_2023.1/AX7010_2023.1/7010_S1文档/images/images_2/image15.pngimage15" src="../_images/image32.png" style="width: 3.63165in; height: 1.78542in;" /></a>
+<ol class="arabic simple" start="2">
+<li><p>如果提示版本更新，我们忽略更新，点击“Continue”</p></li>
+<li><p>点击“next”进行安装，可以看到Vivado对系统要求</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image42.png"><img alt="C:/Users/Administrator/Desktop/vivado_2023.1/AX7010_2023.1/7010_S1文档/images/images_2/image155.pngimage155" src="../_images/image42.png" style="width: 5.35in; height: 4.07112in;" /></a>
+<ol class="arabic simple" start="4">
+<li><p>选择需要安装的产品，如果不需要使用Vitis（取代之前的Vitis）则仅选Vivado，一般Vivado是ZYNQ或者带有处理器硬核的芯片会用到，如果是纯FPGA硬件且自己不学习软件相关，则选择Vivado</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image52.png"><img alt="C:/Users/Administrator/Desktop/vivado_2023.1/AX7010_2023.1/7010_S1文档/images/images_2/image16.pngimage16" src="../_images/image52.png" style="width: 5.36319in; height: 4.07736in;" /></a>
+<ol class="arabic simple" start="5">
+<li><p>这里选择安装的器件库，由于我们不需要UltraScale、UltraScale+和versal芯片，可以取消勾选，节省安装空间，其他保持默认，点击“next”</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image62.png"><img alt="C:/Users/Administrator/Desktop/vivado_2023.1/AX7010_2023.1/7010_S1文档/images/images_2/image17.pngimage17" src="../_images/image62.png" style="width: 6.00417in; height: 4.56667in;" /></a>
+<ol class="arabic simple" start="6">
+<li><p>选中“I agree”，点击“next”</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image72.png"><img alt="image18" src="../_images/image72.png" style="width: 4.94236in; height: 3.76528in;" /></a>
+<ol class="arabic simple" start="7">
+<li><p>安装路径这里没有修改，安装路径不能有中文、空格等特殊字符，同时电脑的用户名不要是中文、带空格的名称。可以看到Vivado对硬盘大小的要求，至少要有190G。</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image82.png"><img alt="C:/Users/Administrator/Desktop/vivado_2023.1/AX7010_2023.1/7010_S1文档/images/images_2/image20.pngimage20" src="../_images/image82.png" style="width: 6.00417in; height: 4.58611in;" /></a>
+<ol class="arabic simple" start="8">
+<li><p>点击“Install”安装</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image92.png"><img alt="../_images/image92.png" src="../_images/image92.png" style="width: 5.55402in; height: 4.25513in;" /></a>
+<ol class="arabic simple" start="9">
+<li><p>等待安装，时间较长，如果没有关闭杀毒软件和电脑管家，安装过程可能会被拦截，导致安装软件后不能使用</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image102.png"><img alt="../_images/image102.png" src="../_images/image102.png" style="width: 6.00417in; height: 4.54097in;" /></a>
+<ol class="arabic simple" start="10">
+<li><p>提示安装成功</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image113.png"><img alt="../_images/image113.png" src="../_images/image113.png" style="width: 5.35414in; height: 4.07846in;" /></a>
+<ol class="arabic simple" start="11">
+<li><p>安装License文件，点击“Copy
+License”，选择“xilinx_ise_vivado.lic”文件。</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image121.png"><img alt="../_images/image121.png" src="../_images/image121.png" style="width: 4.66233in; height: 4.0368in;" /></a>
+<ol class="arabic simple" start="12">
+<li><p>可以看到安装成功</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image131.png"><img alt="../_images/image131.png" src="../_images/image131.png" style="width: 4.5066in; height: 0.81207in;" /></a>
+</section>
+<section id="id3">
+<h2>重新安装驱动<a class="headerlink" href="#id3" title="此标题的永久链接">¶</a></h2>
+<p>一般安装vivado时，都会安装下载器驱动。如果需要再次安装下载器驱动，进入vivado安装路径“X:\XXX\Vivado\2023.1\data\xicom\cable_drivers\nt64\digilent”下，双击“install_digilent.exe”文件安装，安装前先关闭vivado软件，如果vivado识别不到下载器，请尝试关闭防火墙，杀毒软件，也不能同时打开多个版本的vivado、ise。</p>
+<a class="reference internal image-reference" href="../_images/image141.png"><img alt="C:/Users/Administrator/Desktop/vivado_2023.1/AX7010_2023.1/7010_S1文档/images/images_2/image27.pngimage27" src="../_images/image141.png" style="width: 6.00417in; height: 0.94097in;" /></a>
+<p>安装完成后，<strong>连接下载器，</strong>打开设备管理器，在通用串行总线控制器里找到USB
+Serial Converter，说明安装成功</p>
+<a class="reference internal image-reference" href="../_images/image151.png"><img alt="../_images/image151.png" src="../_images/image151.png" style="width: 5.76806in; height: 4.12361in;" /></a>
+<p><em>ZYNQ-7000开发平台 FPGA教程</em>    - <a class="reference external" href="http://www.alinx.com">Alinx官方网站</a></p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">目录</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Vivado开发环境</a><ul>
+<li><a class="reference internal" href="#id1">Vivado软件介绍</a></li>
+<li><a class="reference internal" href="#id2">Vivado软件版本</a></li>
+<li><a class="reference internal" href="#vivadowindows">Vivado软件Windows下安装</a></li>
+<li><a class="reference internal" href="#id3">重新安装驱动</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>上一主题</h4>
+    <p class="topless"><a href="02_ZYNQ%E7%AE%80%E4%BB%8B_CN.html"
+                          title="上一章">ZYNQ简介</a></p>
+  </div>
+  <div>
+    <h4>下一主题</h4>
+    <p class="topless"><a href="04_PL%E7%9A%84LED%E5%AE%9E%E9%AA%8C_CN.html"
+                          title="下一章">PL的“Hello World”LED实验</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>本页</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/src/03_Vivado开发环境_CN.rst.txt"
+            rel="nofollow">显示源代码</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">快速搜索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="提交" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="总索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="04_PL%E7%9A%84LED%E5%AE%9E%E9%AA%8C_CN.html" title="PL的“Hello World”LED实验"
+             >下一页</a> |</li>
+        <li class="right" >
+          <a href="02_ZYNQ%E7%AE%80%E4%BB%8B_CN.html" title="ZYNQ简介"
+             >上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">ZYNQ 7000开发平台FPGA教程 1.0 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Vivado开发环境</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; 版权所有 2024, ALINX.
+      由 <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.2.1创建。
+    </div>
+  </body>
+</html>

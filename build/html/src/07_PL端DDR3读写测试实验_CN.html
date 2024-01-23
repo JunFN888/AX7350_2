@@ -1,0 +1,236 @@
+
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>PL端DDR3读写测试实验 &#8212; ZYNQ 7000开发平台FPGA教程 1.0 文档</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/groundwork.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/translations.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜索" href="../search.html" />
+    <link rel="next" title="GTX收发器误码率测试IBERT实验" href="08_GTX%E6%94%B6%E5%8F%91%E5%99%A8%E8%AF%AF%E7%A0%81%E7%8E%87%E6%B5%8B%E8%AF%95IBERT%E5%AE%9E%E9%AA%8C_CN.html" />
+    <link rel="prev" title="可编程时钟SI5338实验" href="06_%E5%8F%AF%E7%BC%96%E7%A8%8B%E6%97%B6%E9%92%9FSI5338%E5%AE%9E%E9%AA%8C_CN.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="总索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="08_GTX%E6%94%B6%E5%8F%91%E5%99%A8%E8%AF%AF%E7%A0%81%E7%8E%87%E6%B5%8B%E8%AF%95IBERT%E5%AE%9E%E9%AA%8C_CN.html" title="GTX收发器误码率测试IBERT实验"
+             accesskey="N">下一页</a> |</li>
+        <li class="right" >
+          <a href="06_%E5%8F%AF%E7%BC%96%E7%A8%8B%E6%97%B6%E9%92%9FSI5338%E5%AE%9E%E9%AA%8C_CN.html" title="可编程时钟SI5338实验"
+             accesskey="P">上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">ZYNQ 7000开发平台FPGA教程 1.0 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">PL端DDR3读写测试实验</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="plddr3">
+<h1>PL端DDR3读写测试实验<a class="headerlink" href="#plddr3" title="此标题的永久链接">¶</a></h1>
+<p><strong>实验VIvado工程为“ddr3_pl_test”。</strong></p>
+<section id="id1">
+<h2>硬件介绍<a class="headerlink" href="#id1" title="此标题的永久链接">¶</a></h2>
+<p>开发板的PL端有2颗16bit
+ddr3，这很大程度方便我们移植以前的FPGA工程到ZYNQ系统中，同时也提供了更大的带宽。</p>
+<a class="reference internal image-reference" href="../_images/image119.png"><img alt="../_images/image119.png" src="../_images/image119.png" style="width: 6.00417in; height: 3.56213in;" /></a>
+</section>
+<section id="vivado">
+<h2>Vivado工程建立<a class="headerlink" href="#vivado" title="此标题的永久链接">¶</a></h2>
+<section id="id2">
+<h3>创建一个PL端ddr3测试工程<a class="headerlink" href="#id2" title="此标题的永久链接">¶</a></h3>
+<a class="reference internal image-reference" href="../_images/image213.png"><img alt="../_images/image213.png" src="../_images/image213.png" style="width: 4.74703in; height: 4.00319in;" /></a>
+<a class="reference internal image-reference" href="../_images/image310.png"><img alt="../_images/image310.png" src="../_images/image310.png" style="width: 4.8175in; height: 4.06261in;" /></a>
+<a class="reference internal image-reference" href="../_images/image46.png"><img alt="../_images/image46.png" src="../_images/image46.png" style="width: 5.05661in; height: 4.26425in;" /></a>
+</section>
+<section id="ddr3-ip">
+<h3>配置ddr3 IP<a class="headerlink" href="#ddr3-ip" title="此标题的永久链接">¶</a></h3>
+<ol class="arabic simple">
+<li><p>在“IP Catalog”的搜索框搜索“mig”，快速找到“Memory Interface
+Generator”，双击</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image56.png"><img alt="../_images/image56.png" src="../_images/image56.png" style="width: 5.86231in; height: 3.83231in;" /></a>
+<ol class="arabic simple" start="2">
+<li><p>点击“Next”</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image65.png"><img alt="../_images/image65.png" src="../_images/image65.png" style="width: 5.99583in; height: 4.41458in;" /></a>
+<ol class="arabic simple" start="3">
+<li><p>“Component Name”修改为“ddr3”，以后我们例化ddr3就可以，点击“Next”</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image75.png"><img alt="../_images/image75.png" src="../_images/image75.png" style="width: 5.99583in; height: 4.44931in;" /></a>
+<ol class="arabic simple" start="4">
+<li><p>点击“Next”</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image85.png"><img alt="../_images/image85.png" src="../_images/image85.png" style="width: 6in; height: 4.44792in;" /></a>
+<ol class="arabic simple" start="5">
+<li><p>控制器类型选择“DDR3 SDRAM”，点击“Next”</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image95.png"><img alt="../_images/image95.png" src="../_images/image95.png" style="width: 6.00208in; height: 4.42986in;" /></a>
+<ol class="arabic simple" start="6">
+<li><p>“Memory Part”选择“MT41J256m16XX-125”,“Data Width”选择32</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image105.png"><img alt="../_images/image105.png" src="../_images/image105.png" style="width: 6.00208in; height: 4.44722in;" /></a>
+<ol class="arabic simple" start="7">
+<li><p>“Input Clock Period”选择5000ps（200MHz）</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image1110.png"><img alt="../_images/image1110.png" src="../_images/image1110.png" style="width: 5.99583in; height: 5.57431in;" /></a>
+<ol class="arabic simple" start="8">
+<li><p>“System Clock”选择“No Buffer”,“Reference Clock”选择“Use System
+Clock”，“System Reset Polarity”选择“ACTIVE LOW”，点击“Next”</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image124.png"><img alt="../_images/image124.png" src="../_images/image124.png" style="width: 5.99653in; height: 5.54167in;" /></a>
+<ol class="arabic simple" start="9">
+<li><p>使能DCI Cascade，点击“Next”</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image133.png"><img alt="../_images/image133.png" src="../_images/image133.png" style="width: 6.00139in; height: 3.96458in;" /></a>
+<ol class="arabic simple" start="10">
+<li><p>选择“Fixed Pin Out：Pre-existing pin out is konwn and fixed”</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image143.png"><img alt="../_images/image143.png" src="../_images/image143.png" style="width: 5.99653in; height: 3.95764in;" /></a>
+<ol class="arabic simple" start="11">
+<li><p>点击“Read XDC/UCF”</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image153.png"><img alt="../_images/image153.png" src="../_images/image153.png" style="width: 5.99653in; height: 4.43542in;" /></a>
+<ol class="arabic simple" start="12">
+<li><p>选择ddr.ucf,这里可以选择工程里已经存在的XDC文件，只要包含ddr3的管脚分配信息就可以。</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image162.png"><img alt="../_images/image162.png" src="../_images/image162.png" style="width: 6.00417in; height: 4.84306in;" /></a>
+<ol class="arabic simple" start="13">
+<li><p>点击“Validate”</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image172.png"><img alt="../_images/image172.png" src="../_images/image172.png" style="width: 5.99583in; height: 3.98194in;" /></a>
+<ol class="arabic simple" start="14">
+<li><p>选择测试输出的管脚，这里保持默认，不配置</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image182.png"><img alt="../_images/image182.png" src="../_images/image182.png" style="width: 6.00208in; height: 3.99167in;" /></a>
+<ol class="arabic simple" start="15">
+<li><p>点击“Next”</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image192.png"><img alt="../_images/image192.png" src="../_images/image192.png" style="width: 6.00069in; height: 3.98889in;" /></a>
+<ol class="arabic simple" start="16">
+<li><p>点击“Access”接受条款</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image202.png"><img alt="../_images/image202.png" src="../_images/image202.png" style="width: 5.99792in; height: 3.96597in;" /></a>
+<ol class="arabic simple" start="17">
+<li><p>点击“Next”</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image214.png"><img alt="../_images/image214.png" src="../_images/image214.png" style="width: 6.00139in; height: 3.98194in;" /></a>
+<ol class="arabic simple" start="18">
+<li><p>点击“Generate”</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image222.png"><img alt="../_images/image222.png" src="../_images/image222.png" style="width: 5.99583in; height: 3.99375in;" /></a>
+<ol class="arabic simple" start="19">
+<li><p>在弹出的“Generate Output Products”中选择“Generate”</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image232.png"><img alt="../_images/image232.png" src="../_images/image232.png" style="width: 2.95903in; height: 4.06667in;" /></a>
+</section>
+<section id="id3">
+<h3>添加其他测试代码<a class="headerlink" href="#id3" title="此标题的永久链接">¶</a></h3>
+<p>其他代码主要功能是配置si5338，读写ddr3并比较数据是否一致，这里不做详细介绍，可参考工程代码。</p>
+<a class="reference internal image-reference" href="../_images/image241.png"><img alt="../_images/image241.png" src="../_images/image241.png" style="width: 5.39583in; height: 3.5in;" /></a>
+</section>
+</section>
+<section id="id4">
+<h2>下载调试<a class="headerlink" href="#id4" title="此标题的永久链接">¶</a></h2>
+<p>生成bit文件以后，使用JTAG下载到开发板，我们可以通过LED来观察ddr3测试情况，LED1亮表示si5338配置完成，LED2亮表示ddr3
+读写有错误，LED3亮表示ddr3控制器初始化完成，LED4闪烁表示ddr3测试程序在运行。</p>
+</section>
+<section id="id5">
+<h2>实验总结<a class="headerlink" href="#id5" title="此标题的永久链接">¶</a></h2>
+<p>本实验通过PL端Verilog代码直接读写ddr3，通过LED来显示测试结果，我们也可以把ddr3配置成AXI接口，这样方便和ARM系统完成数据交互。</p>
+<p><em>ZYNQ-7000开发平台 FPGA教程</em>    - <a class="reference external" href="http://www.alinx.com">Alinx官方网站</a></p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">目录</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">PL端DDR3读写测试实验</a><ul>
+<li><a class="reference internal" href="#id1">硬件介绍</a></li>
+<li><a class="reference internal" href="#vivado">Vivado工程建立</a><ul>
+<li><a class="reference internal" href="#id2">创建一个PL端ddr3测试工程</a></li>
+<li><a class="reference internal" href="#ddr3-ip">配置ddr3 IP</a></li>
+<li><a class="reference internal" href="#id3">添加其他测试代码</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id4">下载调试</a></li>
+<li><a class="reference internal" href="#id5">实验总结</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>上一主题</h4>
+    <p class="topless"><a href="06_%E5%8F%AF%E7%BC%96%E7%A8%8B%E6%97%B6%E9%92%9FSI5338%E5%AE%9E%E9%AA%8C_CN.html"
+                          title="上一章">可编程时钟SI5338实验</a></p>
+  </div>
+  <div>
+    <h4>下一主题</h4>
+    <p class="topless"><a href="08_GTX%E6%94%B6%E5%8F%91%E5%99%A8%E8%AF%AF%E7%A0%81%E7%8E%87%E6%B5%8B%E8%AF%95IBERT%E5%AE%9E%E9%AA%8C_CN.html"
+                          title="下一章">GTX收发器误码率测试IBERT实验</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>本页</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/src/07_PL端DDR3读写测试实验_CN.rst.txt"
+            rel="nofollow">显示源代码</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">快速搜索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="提交" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="总索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="08_GTX%E6%94%B6%E5%8F%91%E5%99%A8%E8%AF%AF%E7%A0%81%E7%8E%87%E6%B5%8B%E8%AF%95IBERT%E5%AE%9E%E9%AA%8C_CN.html" title="GTX收发器误码率测试IBERT实验"
+             >下一页</a> |</li>
+        <li class="right" >
+          <a href="06_%E5%8F%AF%E7%BC%96%E7%A8%8B%E6%97%B6%E9%92%9FSI5338%E5%AE%9E%E9%AA%8C_CN.html" title="可编程时钟SI5338实验"
+             >上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">ZYNQ 7000开发平台FPGA教程 1.0 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">PL端DDR3读写测试实验</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; 版权所有 2024, ALINX.
+      由 <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.2.1创建。
+    </div>
+  </body>
+</html>

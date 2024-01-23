@@ -1,0 +1,257 @@
+
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>固化程序 &#8212; ZYNQ 7000开发平台FPGA教程 1.0 文档</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/groundwork.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/translations.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜索" href="../search.html" />
+    <link rel="next" title="PCIe ROOT枚举测试" href="17_PCIe%20ROOT%E6%9E%9A%E4%B8%BE%E6%B5%8B%E8%AF%95_CN.html" />
+    <link rel="prev" title="使用VDMA驱动HDMI显示" href="15_%E4%BD%BF%E7%94%A8VDMA%E9%A9%B1%E5%8A%A8HDMI%E6%98%BE%E7%A4%BA_CN.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="总索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="17_PCIe%20ROOT%E6%9E%9A%E4%B8%BE%E6%B5%8B%E8%AF%95_CN.html" title="PCIe ROOT枚举测试"
+             accesskey="N">下一页</a> |</li>
+        <li class="right" >
+          <a href="15_%E4%BD%BF%E7%94%A8VDMA%E9%A9%B1%E5%8A%A8HDMI%E6%98%BE%E7%A4%BA_CN.html" title="使用VDMA驱动HDMI显示"
+             accesskey="P">上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">ZYNQ 7000开发平台FPGA教程 1.0 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">固化程序</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="id1">
+<h1>固化程序<a class="headerlink" href="#id1" title="此标题的永久链接">¶</a></h1>
+<p><strong>实验VIvado工程为“vdma_to_qspi_sd”。</strong></p>
+<p>做个这么多试验，都是通过JTAG调试的，怎么把程序放在SD卡或者烧写到QSPI
+Flash里运行？首先PL必须有PS配置，所以不能像以往的FPGA烧录方法直接烧录到Flash，本实验讲解如何固化程序。</p>
+<section id="vivado">
+<h2>Vivado工程建立<a class="headerlink" href="#vivado" title="此标题的永久链接">¶</a></h2>
+<p>本实验选择VDMA测试工程来固化，在建立VDMA测试工程时，我们没有使能QSPI和SD卡，要固化程序必须使能QSPI或SD卡。</p>
+<ol class="arabic simple">
+<li><p>将VDMA测试工程另存一份，用于固化程序实验，名称改为“vdma_to_qspi_sd”</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image170.png"><img alt="../_images/image170.png" src="../_images/image170.png" style="width: 5.37441in; height: 2.88394in;" /></a>
+<ol class="arabic simple" start="2">
+<li><p>添加QSPI，使用MIO1-6</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image238.png"><img alt="../_images/image238.png" src="../_images/image238.png" style="width: 6.00417in; height: 4.60621in;" /></a>
+<ol class="arabic simple" start="3">
+<li><p>添加SD0控制器，使用MIO40-45，使用TF卡接口</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image328.png"><img alt="../_images/image328.png" src="../_images/image328.png" style="width: 6.00417in; height: 4.60621in;" /></a>
+<ol class="arabic simple" start="4">
+<li><p>添加SD卡的卡检测管脚MIO10</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image419.png"><img alt="../_images/image419.png" src="../_images/image419.png" style="width: 6.00417in; height: 4.60621in;" /></a>
+<ol class="arabic simple" start="5">
+<li><p>保存设计，编译生成bit文件，再次导出硬件</p></li>
+</ol>
+</section>
+<section id="fsbl">
+<h2>生成FSBL<a class="headerlink" href="#fsbl" title="此标题的永久链接">¶</a></h2>
+<p>FSBL是一个二级引导程序，完成MIO的分配、DDR控制器初始化、SD、QSPI控制器初始化，配置FPGA，然后加载用户程序。</p>
+<ol class="arabic simple">
+<li><p>启动Vitis软件。</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image516.png"><img alt="../_images/image516.png" src="../_images/image516.png" style="width: 5.99306in; height: 3.59167in;" /></a>
+<ol class="arabic simple" start="2">
+<li><p>新建一个名为fsbl的APP。</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image614.png"><img alt="../_images/image614.png" src="../_images/image614.png" style="width: 5.99792in; height: 4.75069in;" /></a>
+<ol class="arabic simple" start="3">
+<li><p>模板选择Zynq FSBL</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image714.png"><img alt="../_images/image714.png" src="../_images/image714.png" style="width: 6.00278in; height: 4.73472in;" /></a>
+<ol class="arabic simple" start="4">
+<li><p>添加调试宏定义FSBL_DEBUG_INFO，可以在启动输出FSBL的一些状态信息，有利于调试，但是会导致启动时间变长。</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image814.png"><img alt="../_images/image814.png" src="../_images/image814.png" style="width: 5.99931in; height: 3.97361in;" /></a>
+<ol class="arabic simple" start="5">
+<li><p>保存编译Vitis，生成fsbl.elf文件</p></li>
+</ol>
+</section>
+<section id="boot">
+<h2>创建BOOT文件<a class="headerlink" href="#boot" title="此标题的永久链接">¶</a></h2>
+<ol class="arabic simple">
+<li><p>选择fsbl工程，右键选择Create Boot Image</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image914.png"><img alt="../_images/image914.png" src="../_images/image914.png" style="width: 5.99444in; height: 4.01389in;" /></a>
+<ol class="arabic simple" start="2">
+<li><p>弹出的窗口中可以看到生成的BIF文件路径，BIF文件是生成BOOT文件的配置文件，还有生成的BOOT.bin文件路径，BOOT.bin文件是我们需要的启动文件，可以放到SD卡启动，也可以烧写到QSPI
+Flash。</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image1014.png"><img alt="../_images/image1014.png" src="../_images/image1014.png" style="width: 5.99514in; height: 4.21042in;" /></a>
+<ol class="arabic simple" start="3">
+<li><p>在Boot image
+partitions列表中有要合成的文件，第一个文件一定是bootloader文件，就是上面生成的fsbl.elf文件，第二个文件是FPGA配置文件，现在点击Add添加我们的VDMA测试程序vdma_hdmi.elf</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image1119.png"><img alt="../_images/image1119.png" src="../_images/image1119.png" style="width: 6.00417in; height: 3.77431in;" /></a>
+<ol class="arabic simple" start="4">
+<li><p>点击Create Image生成</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image1215.png"><img alt="../_images/image1215.png" src="../_images/image1215.png" style="width: 6.00347in; height: 4.16319in;" /></a>
+<ol class="arabic simple" start="5">
+<li><p>在生成的目录下可以找到BOOT.bin文件</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image1313.png"><img alt="../_images/image1313.png" src="../_images/image1313.png" style="width: 5.99653in; height: 2.83958in;" /></a>
+</section>
+<section id="sd">
+<h2>SD卡启动测试<a class="headerlink" href="#sd" title="此标题的永久链接">¶</a></h2>
+<ol class="arabic simple">
+<li><p>格式化SD卡，只能格式化为FAT32格式，其他格式无法启动</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image1412.png"><img alt="../_images/image1412.png" src="../_images/image1412.png" style="width: 2.78333in; height: 4.49028in;" /></a>
+<ol class="arabic simple" start="2">
+<li><p>放入BOOT.bin文件，放在根目录</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image1511.png"><img alt="../_images/image1511.png" src="../_images/image1511.png" style="width: 5.07292in; height: 1.98958in;" /></a>
+<ol class="arabic simple" start="3">
+<li><p>SD卡插入开发板的SD卡插槽</p></li>
+<li><p>启动模式调整为SD卡启动</p></li>
+<li><p>插上HDMI显示器，给开发板上电，可以看到显示器显示了小猫的图片</p></li>
+</ol>
+</section>
+<section id="qspi">
+<h2>QSPI启动测试<a class="headerlink" href="#qspi" title="此标题的永久链接">¶</a></h2>
+<ol class="arabic simple">
+<li><p>在菜单Vitis -&gt; Program Flash</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image1610.png"><img alt="../_images/image1610.png" src="../_images/image1610.png" style="width: 6.00278in; height: 4.36389in;" /></a>
+<ol class="arabic simple" start="2">
+<li><p>Image FIle文件选择要烧写的BOOT.bin，模式调整为JTAG。</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image1710.png"><img alt="../_images/image1710.png" src="../_images/image1710.png" style="width: 6in; height: 2.18611in;" /></a>
+<p>关于定制版本fsbl的来源，可以参考xilinx官网链接：<a class="reference external" href="https://www.xilinx.com/support/answers/70148.html">https://www.xilinx.com/support/answers/70148.html</a></p>
+<p>（如果链接失效，可以在xilinx官网搜索AR# 70148）</p>
+<blockquote>
+<div><a class="reference internal image-reference" href="../_images/image1810.png"><img alt="../_images/image1810.png" src="../_images/image1810.png" style="width: 4.74202in; height: 4.89888in;" /></a>
+<a class="reference internal image-reference" href="../_images/image199.png"><img alt="../_images/image199.png" src="../_images/image199.png" style="width: 4.79348in; height: 3.62754in;" /></a>
+</div></blockquote>
+<p><strong>注意：</strong>如果使用Vivado
+2019.1及以后版本就不需要这个定制的fsbl，用自己生成的fsbl即可。</p>
+<ol class="arabic simple" start="3">
+<li><p>点击Program等待烧写完成</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image208.png"><img alt="../_images/image208.png" src="../_images/image208.png" style="width: 5.99931in; height: 2.00208in;" /></a>
+<ol class="arabic simple" start="4">
+<li><p>烧写完成后设置启动模式为QSPI，再次启动，可以看到显示器有显示输出</p></li>
+</ol>
+</section>
+<section id="vivadoqspi">
+<h2>Vivado下烧写QSPI<a class="headerlink" href="#vivadoqspi" title="此标题的永久链接">¶</a></h2>
+<ol class="arabic simple">
+<li><p>在HARDWARE MANGER下选择器件，右键Add Configuration Memory Device</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image2113.png"><img alt="../_images/image2113.png" src="../_images/image2113.png" style="width: 5.2453in; height: 5.05301in;" /></a>
+<ol class="arabic simple" start="2">
+<li><p>选择尝试Winbond，类型选择qspi，宽度选择x4-single，这时候出现一个w25q128，开发板使用w25q256，但是不影响烧录。</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image2211.png"><img alt="../_images/image2211.png" src="../_images/image2211.png" style="width: 5.69145in; height: 4.49577in;" /></a>
+<ol class="arabic simple" start="3">
+<li><p>右键选择编程文件</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image239.png"><img alt="../_images/image239.png" src="../_images/image239.png" style="width: 4.65413in; height: 2.63098in;" /></a>
+<ol class="arabic simple" start="4">
+<li><p>选择要烧写的文件和芯驿电子定制的fsbl文件，就可以烧写了，如果烧写时不是JTAG启动模式，软件会给出一个警告，所以建议烧写QSPI的时候设置到JTAG启动模式</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image247.png"><img alt="../_images/image247.png" src="../_images/image247.png" style="width: 5.54874in; height: 4.14932in;" /></a>
+<p><em>ZYNQ-7000开发平台 FPGA教程</em>    - <a class="reference external" href="http://www.alinx.com">Alinx官方网站</a></p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">目录</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">固化程序</a><ul>
+<li><a class="reference internal" href="#vivado">Vivado工程建立</a></li>
+<li><a class="reference internal" href="#fsbl">生成FSBL</a></li>
+<li><a class="reference internal" href="#boot">创建BOOT文件</a></li>
+<li><a class="reference internal" href="#sd">SD卡启动测试</a></li>
+<li><a class="reference internal" href="#qspi">QSPI启动测试</a></li>
+<li><a class="reference internal" href="#vivadoqspi">Vivado下烧写QSPI</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>上一主题</h4>
+    <p class="topless"><a href="15_%E4%BD%BF%E7%94%A8VDMA%E9%A9%B1%E5%8A%A8HDMI%E6%98%BE%E7%A4%BA_CN.html"
+                          title="上一章">使用VDMA驱动HDMI显示</a></p>
+  </div>
+  <div>
+    <h4>下一主题</h4>
+    <p class="topless"><a href="17_PCIe%20ROOT%E6%9E%9A%E4%B8%BE%E6%B5%8B%E8%AF%95_CN.html"
+                          title="下一章">PCIe ROOT枚举测试</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>本页</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/src/16_固化程序_CN.rst.txt"
+            rel="nofollow">显示源代码</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">快速搜索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="提交" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="总索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="17_PCIe%20ROOT%E6%9E%9A%E4%B8%BE%E6%B5%8B%E8%AF%95_CN.html" title="PCIe ROOT枚举测试"
+             >下一页</a> |</li>
+        <li class="right" >
+          <a href="15_%E4%BD%BF%E7%94%A8VDMA%E9%A9%B1%E5%8A%A8HDMI%E6%98%BE%E7%A4%BA_CN.html" title="使用VDMA驱动HDMI显示"
+             >上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">ZYNQ 7000开发平台FPGA教程 1.0 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">固化程序</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; 版权所有 2024, ALINX.
+      由 <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.2.1创建。
+    </div>
+  </body>
+</html>

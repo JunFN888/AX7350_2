@@ -1,0 +1,230 @@
+
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>PL按键中断实验 &#8212; ZYNQ 7000开发平台FPGA教程 1.0 文档</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/groundwork.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/translations.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜索" href="../search.html" />
+    <link rel="next" title="以太网实验（LWIP）" href="13_%E4%BB%A5%E5%A4%AA%E7%BD%91%E5%AE%9E%E9%AA%8C_CN.html" />
+    <link rel="prev" title="PS定时器中断实验" href="11_PS%E5%AE%9A%E6%97%B6%E5%99%A8%E4%B8%AD%E6%96%AD%E5%AE%9E%E9%AA%8C_CN.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="总索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="13_%E4%BB%A5%E5%A4%AA%E7%BD%91%E5%AE%9E%E9%AA%8C_CN.html" title="以太网实验（LWIP）"
+             accesskey="N">下一页</a> |</li>
+        <li class="right" >
+          <a href="11_PS%E5%AE%9A%E6%97%B6%E5%99%A8%E4%B8%AD%E6%96%AD%E5%AE%9E%E9%AA%8C_CN.html" title="PS定时器中断实验"
+             accesskey="P">上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">ZYNQ 7000开发平台FPGA教程 1.0 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">PL按键中断实验</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="pl">
+<h1>PL按键中断实验<a class="headerlink" href="#pl" title="此标题的永久链接">¶</a></h1>
+<p><strong>实验VIvado工程为“ps_axi_key”。</strong></p>
+<p>前面的定时器中断实验的中断属于PS内部的中断，本实验中断来自PL，PS最大可以接收16个来自PL的中断信号，都是上升沿或高电平触发。本实验用按键中断来控制LED。</p>
+<a class="reference internal image-reference" href="../_images/image138.png"><img alt="../_images/image138.png" src="../_images/image138.png" style="width: 5.41444in; height: 3.40355in;" /></a>
+<section id="vivado">
+<h2>Vivado工程建立<a class="headerlink" href="#vivado" title="此标题的永久链接">¶</a></h2>
+<ol class="arabic simple">
+<li><dl class="simple">
+<dt>本实验所用的Vivado工程只需要在“ps_axi_led”这个工程上添加用于按键输入的AXI</dt><dd><p>GPIO就可以，点击菜单“File -&gt; Save Project As…”</p>
+</dd>
+</dl>
+</li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image225.png"><img alt="../_images/image225.png" src="../_images/image225.png" style="width: 3.75332in; height: 2.28255in;" /></a>
+<ol class="arabic simple" start="2">
+<li><p>新的工程名为“ps_axi_key”</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image318.png"><img alt="../_images/image318.png" src="../_images/image318.png" style="width: 4.11357in; height: 2.20709in;" /></a>
+<ol class="arabic simple" start="3">
+<li><p>添加一个AXI GPIO</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image413.png"><img alt="../_images/image413.png" src="../_images/image413.png" style="width: 3.11185in; height: 3.1715in;" /></a>
+<ol class="arabic simple" start="4">
+<li><p>配置GPIO参数，都为输入，宽度为1，使能中断</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image512.png"><img alt="../_images/image512.png" src="../_images/image512.png" style="width: 6.00417in; height: 4.60569in;" /></a>
+<ol class="arabic simple" start="5">
+<li><p>使用自动连接</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image610.png"><img alt="../_images/image610.png" src="../_images/image610.png" style="width: 4.39949in; height: 2.8636in;" /></a>
+<ol class="arabic simple" start="6">
+<li><p>再把端口名称改为keys</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image710.png"><img alt="../_images/image710.png" src="../_images/image710.png" style="width: 4.29793in; height: 2.38649in;" /></a>
+<ol class="arabic simple" start="7">
+<li><p>配置ZYNQ处理器的中断，勾选IRQ_F2P</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image810.png"><img alt="../_images/image810.png" src="../_images/image810.png" style="width: 6.00417in; height: 4.60569in;" /></a>
+<ol class="arabic simple" start="8">
+<li><p>连接ip2intc_irpt到IRQ_F2Q</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image910.png"><img alt="../_images/image910.png" src="../_images/image910.png" style="width: 6.00417in; height: 2.39822in;" /></a>
+<ol class="arabic simple" start="9">
+<li><p>修改xdc约束文件</p></li>
+</ol>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p>set_property IOSTANDARD LVCMOS15 [get_ports {leds_tri_o[0]}]</p>
+<p>set_property IOSTANDARD LVCMOS15 [get_ports {leds_tri_o[1]}]</p>
+<p>set_property IOSTANDARD LVCMOS15 [get_ports {leds_tri_o[2]}]</p>
+<p>set_property IOSTANDARD LVCMOS15 [get_ports {leds_tri_o[3]}]</p>
+<p>set_property PACKAGE_PIN F5 [get_ports {leds_tri_o[0]}]</p>
+<p>set_property PACKAGE_PIN E5 [get_ports {leds_tri_o[1]}]</p>
+<p>set_property PACKAGE_PIN G5 [get_ports {leds_tri_o[2]}]</p>
+<p>set_property PACKAGE_PIN G6 [get_ports {leds_tri_o[3]}]</p>
+<p>set_property IOSTANDARD LVCMOS15 [get_ports {keys_tri_i[0]}]</p>
+<p>set_property PACKAGE_PIN H6 [get_ports {keys_tri_i[0]}]</p>
+</td>
+</tr>
+</tbody>
+</table>
+<ol class="arabic simple">
+<li><p>保存设计，编译生成bit文件</p></li>
+</ol>
+</section>
+<section id="id1">
+<h2>下载调试<a class="headerlink" href="#id1" title="此标题的永久链接">¶</a></h2>
+<ol class="arabic simple">
+<li><p>点击FileLaunch Vitis进入Vitis</p></li>
+</ol>
+<blockquote>
+<div><a class="reference internal image-reference" href="../_images/image1010.png"><img alt="../_images/image1010.png" src="../_images/image1010.png" style="width: 2.81875in; height: 2.58056in;" /></a>
+</div></blockquote>
+<ol class="arabic simple" start="2">
+<li><p>新建platform工程过程不再赘述，参考“PS点亮PL的LED灯” 一章</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image1115.png"><img alt="../_images/image1115.png" src="../_images/image1115.png" style="width: 5.99514in; height: 2.96597in;" /></a>
+<ol class="arabic simple" start="3">
+<li><p>和前面的教程一样，在不熟悉Vitis程序编写的情况下，我们尽量使用Vitis自带例程来修改</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image1211.png"><img alt="../_images/image1211.png" src="../_images/image1211.png" style="width: 6.00278in; height: 2.86597in;" /></a>
+<ol class="arabic simple" start="4">
+<li><p>选择“xgpio_intr_tapp_example”</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image139.png"><img alt="../_images/image139.png" src="../_images/image139.png" style="width: 5.99722in; height: 3.86528in;" /></a>
+<ol class="arabic simple" start="5">
+<li><p>导入例程以后有未定义的错误，我们需要修改部分代码</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image148.png"><img alt="../_images/image148.png" src="../_images/image148.png" style="width: 5.99306in; height: 3.45278in;" /></a>
+<ol class="arabic simple" start="6">
+<li><p>按下图修改GPIO和中断号的宏定义</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image157.png"><img alt="../_images/image157.png" src="../_images/image157.png" style="width: 4.76266in; height: 3.62812in;" /></a>
+<ol class="arabic simple" start="7">
+<li><p>修改测试延时时间，让我们有足够的时间去按按键</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image166.png"><img alt="../_images/image166.png" src="../_images/image166.png" style="width: 5.55207in; height: 4.39663in;" /></a>
+<ol class="arabic simple" start="8">
+<li><p>打开串口终端，运行程序</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image176.png"><img alt="../_images/image176.png" src="../_images/image176.png" style="width: 4.93056in; height: 3.36319in;" /></a>
+<ol class="arabic simple" start="9">
+<li><p>如果一直不按按键，串口显示“No button
+pressed.”，如果按下“PL_KEY”显示“Successfully ran Gpio Interrupt Tapp
+Example”。</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image186.png"><img alt="../_images/image186.png" src="../_images/image186.png" style="width: 5.43905in; height: 3.41538in;" /></a>
+</section>
+<section id="id2">
+<h2>实验总结<a class="headerlink" href="#id2" title="此标题的永久链接">¶</a></h2>
+<p>PL端可以给PS发送中断信号，这提高了PL和PS数据交互的效率，在需要大数量、低延时的应用中需要用到中断处理。</p>
+<p><em>ZYNQ-7000开发平台 FPGA教程</em>    - <a class="reference external" href="http://www.alinx.com">Alinx官方网站</a></p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">目录</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">PL按键中断实验</a><ul>
+<li><a class="reference internal" href="#vivado">Vivado工程建立</a></li>
+<li><a class="reference internal" href="#id1">下载调试</a></li>
+<li><a class="reference internal" href="#id2">实验总结</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>上一主题</h4>
+    <p class="topless"><a href="11_PS%E5%AE%9A%E6%97%B6%E5%99%A8%E4%B8%AD%E6%96%AD%E5%AE%9E%E9%AA%8C_CN.html"
+                          title="上一章">PS定时器中断实验</a></p>
+  </div>
+  <div>
+    <h4>下一主题</h4>
+    <p class="topless"><a href="13_%E4%BB%A5%E5%A4%AA%E7%BD%91%E5%AE%9E%E9%AA%8C_CN.html"
+                          title="下一章">以太网实验（LWIP）</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>本页</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/src/12_PL按键中断实验_CN.rst.txt"
+            rel="nofollow">显示源代码</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">快速搜索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="提交" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="总索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="13_%E4%BB%A5%E5%A4%AA%E7%BD%91%E5%AE%9E%E9%AA%8C_CN.html" title="以太网实验（LWIP）"
+             >下一页</a> |</li>
+        <li class="right" >
+          <a href="11_PS%E5%AE%9A%E6%97%B6%E5%99%A8%E4%B8%AD%E6%96%AD%E5%AE%9E%E9%AA%8C_CN.html" title="PS定时器中断实验"
+             >上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">ZYNQ 7000开发平台FPGA教程 1.0 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">PL按键中断实验</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; 版权所有 2024, ALINX.
+      由 <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.2.1创建。
+    </div>
+  </body>
+</html>

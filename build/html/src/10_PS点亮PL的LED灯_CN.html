@@ -1,0 +1,305 @@
+
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>PS点亮PL的LED灯 &#8212; ZYNQ 7000开发平台FPGA教程 1.0 文档</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/groundwork.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/translations.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜索" href="../search.html" />
+    <link rel="next" title="PS定时器中断实验" href="11_PS%E5%AE%9A%E6%97%B6%E5%99%A8%E4%B8%AD%E6%96%AD%E5%AE%9E%E9%AA%8C_CN.html" />
+    <link rel="prev" title="体验ARM，裸机输出“Hello World”" href="09_%E4%BD%93%E9%AA%8CARM_CN.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="总索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="11_PS%E5%AE%9A%E6%97%B6%E5%99%A8%E4%B8%AD%E6%96%AD%E5%AE%9E%E9%AA%8C_CN.html" title="PS定时器中断实验"
+             accesskey="N">下一页</a> |</li>
+        <li class="right" >
+          <a href="09_%E4%BD%93%E9%AA%8CARM_CN.html" title="体验ARM，裸机输出“Hello World”"
+             accesskey="P">上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">ZYNQ 7000开发平台FPGA教程 1.0 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">PS点亮PL的LED灯</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="psplled">
+<h1>PS点亮PL的LED灯<a class="headerlink" href="#psplled" title="此标题的永久链接">¶</a></h1>
+<p><strong>实验VIvado工程为“ps_axi_led”。</strong></p>
+<p>使用zynq最大的疑问就是如何把PS和PL结合起来使用，在其他的SOC芯片中一般都会有GPIO，本实验使用一个AXI
+GPIO的IP核，让PS端通过AXI总线控制PL端的LED灯，实验虽然简单，不过可以让我们了解PL和PS是如何结合的。</p>
+<section id="vivado">
+<h2>Vivado工程建立<a class="headerlink" href="#vivado" title="此标题的永久链接">¶</a></h2>
+<ol class="arabic simple">
+<li><p>建立一个名为“ps_axi_led”Vivado工程，表示PS通过AXI总线控制LED灯</p></li>
+<li><p>创建一个Block设计</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image128.png"><img alt="../_images/image128.png" src="../_images/image128.png" style="width: 4.98185in; height: 4.57309in;" /></a>
+<ol class="arabic simple" start="3">
+<li><p>添加ZYNQ处理器</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image218.png"><img alt="../_images/image218.png" src="../_images/image218.png" style="width: 4.98024in; height: 2.87129in;" /></a>
+<ol class="arabic simple" start="4">
+<li><p>配置Bank电平标准，使能串口</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image315.png"><img alt="../_images/image315.png" src="../_images/image315.png" style="width: 6.00417in; height: 4.60569in;" /></a>
+<ol class="arabic simple" start="5">
+<li><p>配置DDR3型号为“MT41J256M16 RE-125”</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image410.png"><img alt="../_images/image410.png" src="../_images/image410.png" style="width: 5.6564in; height: 4.33893in;" /></a>
+<ol class="arabic simple" start="6">
+<li><p>添加一个AXI GPIO的IP 核</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image59.png"><img alt="../_images/image59.png" src="../_images/image59.png" style="width: 5.65607in; height: 3.21019in;" /></a>
+<ol class="arabic simple" start="7">
+<li><p>双击刚才添加的“axi_gpio_0”配置参数</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image68.png"><img alt="../_images/image68.png" src="../_images/image68.png" style="width: 4.98277in; height: 3.5097in;" /></a>
+<ol class="arabic simple" start="8">
+<li><p>选择“All Outputs”，因为这里控制LED，只要输出就可以了，“GPIO
+Width”填4，控制4颗LED，点击OK</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image78.png"><img alt="../_images/image78.png" src="../_images/image78.png" style="width: 5.33472in; height: 4.09217in;" /></a>
+<ol class="arabic simple" start="9">
+<li><p>点击“Run Connection Automation”，可以完成部分自动连线</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image88.png"><img alt="../_images/image88.png" src="../_images/image88.png" style="width: 6.00417in; height: 3.64456in;" /></a>
+<ol class="arabic simple" start="10">
+<li><p>选择要自动连接的端口，这里全选，点击OK</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image98.png"><img alt="../_images/image98.png" src="../_images/image98.png" style="width: 5.24778in; height: 3.28171in;" /></a>
+<ol class="arabic simple" start="11">
+<li><p>点击“Run Block Automation”</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image108.png"><img alt="../_images/image108.png" src="../_images/image108.png" style="width: 5.56398in; height: 2.74951in;" /></a>
+<ol class="arabic simple" start="12">
+<li><p>点击“OK”</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image1113.png"><img alt="../_images/image1113.png" src="../_images/image1113.png" style="width: 5.60424in; height: 3.50462in;" /></a>
+<ol class="arabic simple" start="13">
+<li><p>点击“Optimize Routing”，可以优化布局</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image129.png"><img alt="../_images/image129.png" src="../_images/image129.png" style="width: 5.50382in; height: 3.63525in;" /></a>
+<ol class="arabic simple" start="14">
+<li><p>修改GPIO端口的名称</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image136.png"><img alt="../_images/image136.png" src="../_images/image136.png" style="width: 5.27119in; height: 2.94128in;" /></a>
+<ol class="arabic simple" start="15">
+<li><p>名称修改为leds</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image146.png"><img alt="../_images/image146.png" src="../_images/image146.png" style="width: 5.01486in; height: 2.59331in;" /></a>
+<ol class="arabic simple" start="16">
+<li><p>创建HDL文件</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image155.png"><img alt="../_images/image155.png" src="../_images/image155.png" style="width: 4.58179in; height: 2.95265in;" /></a>
+<ol class="arabic simple" start="17">
+<li><p>点击“OK”</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image164.png"><img alt="../_images/image164.png" src="../_images/image164.png" style="width: 3.77054in; height: 2.17849in;" /></a>
+<ol class="arabic simple" start="18">
+<li><p>在生成的Verilog文件中，可以看到有个“leds_tri_o”的输出端口，要为他们分配管脚</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image174.png"><img alt="../_images/image174.png" src="../_images/image174.png" style="width: 5.36221in; height: 3.70599in;" /></a>
+</section>
+<section id="xdcpl">
+<h2>XDC文件约束PL管脚<a class="headerlink" href="#xdcpl" title="此标题的永久链接">¶</a></h2>
+<ol class="arabic simple">
+<li><p>创建一个新的xdc约束文件</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image184.png"><img alt="../_images/image184.png" src="../_images/image184.png" style="width: 6.00417in; height: 2.82087in;" /></a>
+<ol class="arabic simple" start="2">
+<li><p>文件名称为led</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image194.png"><img alt="../_images/image194.png" src="../_images/image194.png" style="width: 6.00417in; height: 4.05346in;" /></a>
+<ol class="arabic simple" start="3">
+<li><p>led.xdc添加一下内容，端口名称一定要和顶层文件端口一致</p></li>
+</ol>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p>set_property IOSTANDARD LVCMOS15 [get_ports {leds_tri_o[0]}]</p>
+<p>set_property IOSTANDARD LVCMOS15 [get_ports {leds_tri_o[1]}]</p>
+<p>set_property IOSTANDARD LVCMOS15 [get_ports {leds_tri_o[2]}]</p>
+<p>set_property IOSTANDARD LVCMOS15 [get_ports {leds_tri_o[3]}]</p>
+<p>set_property PACKAGE_PIN F5 [get_ports {leds_tri_o[0]}]</p>
+<p>set_property PACKAGE_PIN E5 [get_ports {leds_tri_o[1]}]</p>
+<p>set_property PACKAGE_PIN G5 [get_ports {leds_tri_o[2]}]</p>
+<p>set_property PACKAGE_PIN G6 [get_ports {leds_tri_o[3]}]</p>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="vitis">
+<h2>Vitis程序编写<a class="headerlink" href="#vitis" title="此标题的永久链接">¶</a></h2>
+<ol class="arabic simple">
+<li><p>生成bit文件</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image204.png"><img alt="../_images/image204.png" src="../_images/image204.png" style="width: 2.75625in; height: 1.22639in;" /></a>
+<ol class="arabic simple" start="2">
+<li><p>导出硬件</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image219.png"><img alt="../_images/image219.png" src="../_images/image219.png" style="width: 2.33194in; height: 2.83611in;" /></a>
+<ol class="arabic simple" start="3">
+<li><p>因为要用到PL，所以选择“Include bitstream”，点击“OK”</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image224.png"><img alt="../_images/image224.png" src="../_images/image224.png" style="width: 3.75625in; height: 3.18333in;" /></a>
+<ol class="arabic simple" start="4">
+<li><p>运行Vitis</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image234.png"><img alt="C:/Users/Administrator/Desktop/vivado_2023.1/AX7010_2023.1/7010_S2文档/images/images_1/image46.pngimage46" src="../_images/image234.png" style="width: 1.03556in; height: 1.22014in;" /></a>
+<ol class="arabic simple" start="5">
+<li><p>与前面的Hello World实验不同，我们只建立Platform工程</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image243.png"><img alt="C:/Users/Administrator/Desktop/vivado_2023.1/AX7010_2023.1/7010_S2文档/images/images_2/image113.pngimage113" src="../_images/image243.png" style="width: 5.98472in; height: 3.3875in;" /></a>
+<ol class="arabic simple" start="6">
+<li><p>填入工程名字，点击Next</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image252.png"><img alt="C:/Users/Administrator/Desktop/vivado_2023.1/AX7010_2023.1/7010_S2文档/images/images_2/image114.pngimage114" src="../_images/image252.png" style="width: 5.10417in; height: 4.34722in;" /></a>
+<ol class="arabic simple" start="7">
+<li><p>点击“Create a new platform
+hardware(XSA)，软件已经提供了一些板卡的硬件平台，但对于</p></li>
+<li><p>我们自己的硬件平台，可以选择browse</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image262.png"><img alt="C:/Users/Administrator/Desktop/vivado_2023.1/AX7010_2023.1/7010_S2文档/images/images_2/image115.pngimage115" src="../_images/image262.png" style="width: 4.79722in; height: 4.06042in;" /></a>
+<ol class="arabic simple" start="9">
+<li><p>选择XSA文件</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image272.png"><img alt="C:/Users/Administrator/Desktop/vivado_2023.1/AX7010_2023.1/7010_S2文档/images/images_2/image116.pngimage116" src="../_images/image272.png" style="width: 6.9875in; height: 3.89514in;" /></a>
+<p>保持默认，点击Finish</p>
+<a class="reference internal image-reference" href="../_images/image282.png"><img alt="../_images/image282.png" src="../_images/image282.png" style="width: 4.88165in; height: 3.93988in;" /></a>
+<ol class="arabic simple" start="10">
+<li><p>面对一个不熟悉AXI
+GPIO，我们如何控制呢？我们可以尝试一下Vitis自带的例程</p></li>
+<li><p>点开platform.spr，并点开BSP</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image292.png"><img alt="../_images/image292.png" src="../_images/image292.png" style="width: 5.99514in; height: 2.96597in;" /></a>
+<ol class="arabic simple" start="12">
+<li><p>找到“axi_gpio_0”,这里可以点击“Documentation”来看相关文档，这里就不演示，点击“Import
+Examples”</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image302.png"><img alt="../_images/image302.png" src="../_images/image302.png" style="width: 5.99097in; height: 2.91944in;" /></a>
+<ol class="arabic simple" start="13">
+<li><p>在弹出的对话框中有多个例程，从名称中可以猜个大概，这里选第一个“xgpio_example”</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image316.png"><img alt="../_images/image316.png" src="../_images/image316.png" style="width: 3.16528in; height: 2.0375in;" /></a>
+<ol class="arabic simple" start="14">
+<li><p>可以看到例程比较简单，短短几行代码，完成了AXI GPIO的操作</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image323.png"><img alt="../_images/image323.png" src="../_images/image323.png" style="width: 6.00278in; height: 4.37708in;" /></a>
+<p>里面用到很多GPIO相关的API函数，通过文档可以了解详细，也可以选中该函数，按“F3”查看具体定义。如果有了这些信息你还不能理解如何使用AXI
+GPIO，说明你需要补充C语言基础。</p>
+</section>
+<section id="id1">
+<h2>下载调试<a class="headerlink" href="#id1" title="此标题的永久链接">¶</a></h2>
+<ol class="arabic simple">
+<li><p>虽然Vitis可以提供一些例程，但有一部分例程是需要自己修改的，这个简单的LED例程就不修改了，尝试运行一下，发现不能达到预期效果，甚至提示一些错误。</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image333.png"><img alt="../_images/image333.png" src="../_images/image333.png" style="width: 4.85903in; height: 4.86597in;" /></a>
+<ol class="arabic simple" start="2">
+<li><p>前面的教程已经提到，“Run As”最好复位系统，有PL的设计要“Program
+FPGA”，如果你的PL多次修改，别忘了重新导出硬件。按照下图配置后再次运行，可以看到开发板LED1快速闪烁。</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image342.png"><img alt="../_images/image342.png" src="../_images/image342.png" style="width: 5.99792in; height: 3.24306in;" /></a>
+<ol class="arabic simple" start="3">
+<li><p>修改代码让4个LED灯都闪烁</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/image352.png"><img alt="../_images/image352.png" src="../_images/image352.png" style="width: 5.16954in; height: 2.64195in;" /></a>
+</section>
+<section id="id2">
+<h2>实验总结<a class="headerlink" href="#id2" title="此标题的永久链接">¶</a></h2>
+<p>通过实验我们了解到PS可以通过AXI总线控制PL，但视乎没有体现出ZYNQ的优势，因为对于控制LED灯，无论是ARM还是FPGA，都可以轻松完成，但是如果把LED换成串口呢，控制100路串口通信，8路以太网等应用，我想还没有哪个SOC能完成这种功能，只有ZYNQ可以，这就是ZYNQ和普通SOC的不同之处。</p>
+<p><em>ZYNQ-7000开发平台 FPGA教程</em>    - <a class="reference external" href="http://www.alinx.com">Alinx官方网站</a></p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">目录</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">PS点亮PL的LED灯</a><ul>
+<li><a class="reference internal" href="#vivado">Vivado工程建立</a></li>
+<li><a class="reference internal" href="#xdcpl">XDC文件约束PL管脚</a></li>
+<li><a class="reference internal" href="#vitis">Vitis程序编写</a></li>
+<li><a class="reference internal" href="#id1">下载调试</a></li>
+<li><a class="reference internal" href="#id2">实验总结</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>上一主题</h4>
+    <p class="topless"><a href="09_%E4%BD%93%E9%AA%8CARM_CN.html"
+                          title="上一章">体验ARM，裸机输出“Hello World”</a></p>
+  </div>
+  <div>
+    <h4>下一主题</h4>
+    <p class="topless"><a href="11_PS%E5%AE%9A%E6%97%B6%E5%99%A8%E4%B8%AD%E6%96%AD%E5%AE%9E%E9%AA%8C_CN.html"
+                          title="下一章">PS定时器中断实验</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>本页</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/src/10_PS点亮PL的LED灯_CN.rst.txt"
+            rel="nofollow">显示源代码</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">快速搜索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="提交" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="总索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="11_PS%E5%AE%9A%E6%97%B6%E5%99%A8%E4%B8%AD%E6%96%AD%E5%AE%9E%E9%AA%8C_CN.html" title="PS定时器中断实验"
+             >下一页</a> |</li>
+        <li class="right" >
+          <a href="09_%E4%BD%93%E9%AA%8CARM_CN.html" title="体验ARM，裸机输出“Hello World”"
+             >上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">ZYNQ 7000开发平台FPGA教程 1.0 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">PS点亮PL的LED灯</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; 版权所有 2024, ALINX.
+      由 <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.2.1创建。
+    </div>
+  </body>
+</html>
